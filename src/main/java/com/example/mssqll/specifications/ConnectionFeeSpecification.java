@@ -141,6 +141,9 @@ public class ConnectionFeeSpecification {
                             Join<ConnectionFee, ExtractionTask> extractionTaskJoin = root.join("extractionTask");
                             predicates.add(criteriaBuilder.like(extractionTaskJoin.get("fileName"), "%" + value + "%"));
                             break;
+                        case "history":
+                            predicates.add(criteriaBuilder.equal(root.get("history_id"), value));
+                            break;
                         case "download":
                             System.out.println("Downloading records...");
                             // Exclude records where status is REMINDER

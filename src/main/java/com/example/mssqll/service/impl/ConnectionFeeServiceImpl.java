@@ -231,7 +231,8 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                     reminderFee1.setTransferPerson(userDetails);
                     reminderFee1.setExtractionTask(parent.getExtractionTask());
                     reminderFee1.setOrderN("ნაშთი");
-                    reminderFee1.setPurpose("ნაშთი");reminderFee1.setTotalAmount(connectionFee.getTotalAmount());
+                    reminderFee1.setPurpose("ნაშთი");
+                    reminderFee1.setTotalAmount(connectionFee.getTotalAmount());
                     connectionFeeRepository.save(reminderFee1);
                 }
             }
@@ -602,8 +603,6 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
 
     @Override
     public Integer uploadHistory(MultipartFile file) throws IOException {
-        int batchSize = 50;
-        List<ConnectionFee> batch = new ArrayList<>();
         LocalDateTime today = LocalDateTime.now();
         ExtractionTask task;
         try {
@@ -647,25 +646,27 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                 Row row = sheet.getRow(i);
                 if (getDoubleCellValue(row.getCell(7)) == null ||
                         getDoubleCellValue(row.getCell(7)) == 0.0) {
+                    System.out.println(getDoubleCellValue(row.getCell(7)));
                     continue;
                 }
                 rowNum = i;
-                //  Skip empty rows
+                // ✅ Skip empty rows
                 if (isRowEmpty(row)) {
                     continue;
                 }
 
                 ConnectionFee fee = new ConnectionFee();
                 try {
-                    fee.setId(getLongCellValue(row.getCell(0)));//1 აიდი
+                    fee.setHistoryId(getLongCellValue(row.getCell(0)));//1 აიდი
                     fee.setOrderN(getStringCellValue(row.getCell(1)));//2 ორდეირს ნომერი
                     fee.setRegion(getStringCellValue(row.getCell(2)));//3 რეგიონი
                     fee.setServiceCenter(getStringCellValue(row.getCell(3)));//4 მომსახურების ცენტრი
                     fee.setProjectID(getStringCellValue(row.getCell(4)));//5 პროექტის ნომერი
+
                     Integer paymentType = (int) row.getCell(5).getNumericCellValue();//6 ტიპი
                     fee.setWithdrawType(PAYMENT_MAPPING.getOrDefault(paymentType, "Unknown payment type"));
 
-                    // Date Handling
+                    // ✅ Date Handling
                     try {
                         LocalDate extractionDate = null;
                         if (row.getCell(6) != null && !row.getCell(6).toString().trim().isEmpty()) {
@@ -751,22 +752,18 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                     fee.setTransferPerson(userDetails);
                     fee.setChangePerson(userDetails);
                     fee.setExtractionTask(task);
-                    batch.add(fee);
-                    if ((i + 1) % batchSize == 0) {
-                        connectionFeeRepository.saveAll(batch);
-                        connectionFeeRepository.flush();  // Ensures data is written to the database
-                        batch.clear();  // Clear batch to free memory
-                    }
+                    connectionFees.add(fee);
 
                 } catch (Exception e) {
                     logFullRow(row, e);
                 }
             }
+            connectionFeeRepository.saveAll(connectionFees);
             System.out.println("Processed " + connectionFees.size() + " records");
             return connectionFees.size();
 
         } catch (Exception e) {
-            System.err.println("Critical error reading file :" + file.getOriginalFilename() + "row: " + rowNum);
+            System.err.println("🚨 Critical error reading file :" + file.getOriginalFilename() + "row: " + rowNum);
             e.printStackTrace();
             return 0;
         }

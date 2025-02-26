@@ -22,7 +22,8 @@ import java.util.List;
                 @Index(name = "idx_transfer_person", columnList = "transfer_person"),
                 @Index(name = "idx_status", columnList = "status"),
                 @Index(name = "idx_transfer_date", columnList = "transfer_date"),
-                @Index(name = "idx_extraction_date", columnList = "extraction_date")
+                @Index(name = "idx_extraction_date", columnList = "extraction_date"),
+                @Index(name = "idx_history_id", columnList = "history_id")
         })
 @Data
 @Getter
@@ -34,6 +35,9 @@ public class ConnectionFee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @Nullable
+    private Long historyId;
 
     private OrderStatus orderStatus;
 

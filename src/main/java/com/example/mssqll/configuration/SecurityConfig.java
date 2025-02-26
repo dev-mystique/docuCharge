@@ -54,7 +54,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/signin").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/connection-fees/download").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/connection-fees/download-ext").permitAll()
-//                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/signup").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/signup").permitAll()
                                 .requestMatchers("/actuator/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh-token").permitAll()
                                 .requestMatchers(HttpMethod.GET).authenticated()
