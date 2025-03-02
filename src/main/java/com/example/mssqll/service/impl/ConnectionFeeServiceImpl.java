@@ -586,6 +586,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                 .transferPerson(castUserToDto(cf.getTransferPerson()))
                 .changePerson(castUserToDto(cf.getChangePerson()))
                 .note(cf.getNote())
+                .historyId(cf.getHistoryId())
                 .build();
     }
 

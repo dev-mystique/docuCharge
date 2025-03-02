@@ -70,4 +70,6 @@ public class ConnectionFeeResponseDto {
 
     private List<ConnectionFeeResponseDto> children;
 
+    private Long historyId;
+
 }

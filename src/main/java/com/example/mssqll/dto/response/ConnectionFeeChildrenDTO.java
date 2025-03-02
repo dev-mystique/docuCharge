@@ -25,4 +25,5 @@ public class ConnectionFeeChildrenDTO {
     private String description;
     private String tax;
     private List<ConnectionFeeChildrenDTO> children;
+    private Long historyId;
 }
