@@ -20,7 +20,7 @@ jobs:
 
       - name: Bump Version
         id: version
-        uses: paulhatch/semantic-version@v5
+        uses: paulhatch/semantic-version@v4
         with:
           tag_prefix: "v"
           major_pattern: "BREAKING CHANGE:"
@@ -29,7 +29,9 @@ jobs:
 
       - name: Update `pom.xml` with New Version
         run: |
-          sed -i 's|<version>.*</version>|<version>${{ steps.version.outputs.version }}</version>|' pom.xml
+          NEW_VERSION=${{ steps.version.outputs.version }}
+          xmlstarlet ed -L -N x="http://maven.apache.org/POM/4.0.0" \
+            -u "/x:project/x:version" -v "$NEW_VERSION" pom.xml
 
       - name: Commit and Push Changes
         run: |
