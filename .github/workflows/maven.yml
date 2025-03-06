@@ -24,7 +24,7 @@ jobs:
           mvn clean install  # This builds the JAR file in the target directory
 
       - name: Upload JAR file as an artifact (optional)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: jar-file
           path: target/*.jar  # Modify this if your JAR is located elsewhere
