@@ -27,6 +27,9 @@ jobs:
           minor_pattern: "feat:"
           version_format: "${major}.${minor}.${patch}"
 
+      - name: Install xmlstarlet
+        run: sudo apt-get install -y xmlstarlet
+
       - name: Update `pom.xml` with New Version
         run: |
           NEW_VERSION=${{ steps.version.outputs.version }}
