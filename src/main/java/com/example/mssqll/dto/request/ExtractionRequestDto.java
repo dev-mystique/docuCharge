@@ -9,7 +9,6 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class ExtractionRequestDto {
-
     private LocalDate date;
 
     private int totalAmount;
