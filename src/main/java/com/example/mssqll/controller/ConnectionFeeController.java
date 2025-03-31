@@ -10,6 +10,7 @@ import com.example.mssqll.utiles.exceptions.DivideException;
 import com.example.mssqll.utiles.exceptions.ResourceNotFoundException;
 import com.example.mssqll.utiles.exceptions.TokenValidationException;
 import com.example.mssqll.utiles.resonse.ApiResponse;
+import org.apache.poi.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -200,6 +201,7 @@ public class ConnectionFeeController {
         if (file.isEmpty()) {
             throw new ResourceNotFoundException("Please select a file to upload");
         }
+        IOUtils.setByteArrayMaxOverride(141582236);
         try {
             count = connectionFeeService.uploadHistory(file);
             return ResponseEntity.ok(
@@ -207,14 +209,11 @@ public class ConnectionFeeController {
                             "message", "Successfully uploaded",
                             "count", count
                     ));
-
         } catch (Exception e) {
-            System.out.println(1);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to process the file: " + e.getMessage());
         }
     }
-
 
     @GetMapping("/download-ext")
     public ResponseEntity<Resource> downloadFile(@RequestParam String fileName,@RequestParam String accessToken) {

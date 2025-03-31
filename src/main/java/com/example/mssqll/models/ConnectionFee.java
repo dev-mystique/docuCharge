@@ -109,15 +109,15 @@ public class ConnectionFee {
     @Column(name = "total_amount", nullable = false)
     private Double totalAmount;
 
-    @Column(name = "purpose", length = 255, nullable = false)
+    @Column(name = "purpose", length = 1024, nullable = false)
     @Nationalized
     private String purpose;
 
-    @Column(name = "description", length = 255)
+    @Column(name = "description", length = 1024)
     @Nationalized
     private String description;
 
-    @Column(name = "tax_id", length = 255)
+    @Column(name = "tax_id")
     @Nationalized
     @Nullable
     private String tax;

@@ -644,6 +644,9 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
             Sheet sheet = workbook.getSheetAt(0);
 
             for (int i = 2; i <= sheet.getLastRowNum(); i++) { // Start from row 2 to skip headers
+                if (rowNum == 215580) {
+                    continue;
+                }
                 Row row = sheet.getRow(i);
                 if (getDoubleCellValue(row.getCell(7)) == null ||
                         getDoubleCellValue(row.getCell(7)) == 0.0) {
@@ -651,7 +654,6 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                     continue;
                 }
                 rowNum = i;
-                // ✅ Skip empty rows
                 if (isRowEmpty(row)) {
                     continue;
                 }
@@ -666,8 +668,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
 
                     Integer paymentType = (int) row.getCell(5).getNumericCellValue();//6 ტიპი
                     fee.setWithdrawType(PAYMENT_MAPPING.getOrDefault(paymentType, "Unknown payment type"));
-
-                    // ✅ Date Handling
+                    //7 თარიღი
                     try {
                         LocalDate extractionDate = null;
                         if (row.getCell(6) != null && !row.getCell(6).toString().trim().isEmpty()) {
@@ -694,9 +695,9 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                     }
 
                     fee.setTotalAmount(getDoubleCellValue(row.getCell(7)));//8 ბრუნვა
-                    fee.setPurpose(getStringCellValue(row.getCell(8)));//9 დანიშნულება
+                    fee.setPurpose(getStringCellValue(row.getCell(8))!=null ? getStringCellValue(row.getCell(8)) :" ");//9 დანიშნულება
                     fee.setDescription(getStringCellValue(row.getCell(9))); //10 დამატებითი ინფირმაცია
-                    fee.setTax(getStringCellValue(row.getCell(10)));//
+                    fee.setTax(getStringCellValue(row.getCell(10)));//11ტაქსი
                     fee.setNote(getStringCellValue(row.getCell(13)));// 13 შენიშვნა
                     System.out.println(fee.getNote() + " note");
 
@@ -710,17 +711,17 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                         logRowError(row, 11, e);
                         fee.setClarificationDate(null);
                     }
-                    // Treasury Refund Date
+                    // 14 Treasury Refund Date
                     try {
                         if (row.getCell(14) != null && !row.getCell(14).toString().isEmpty()) {
                             LocalDate treasuryRefundDate = LocalDate.parse(row.getCell(14).toString(), formatter);
                             fee.setTreasuryRefundDate(treasuryRefundDate);
                         }
                     } catch (Exception e) {
-                        logRowError(row, 14, e);
+                        logRowError(row, 13, e);
                         fee.setTreasuryRefundDate(null);
                     }
-                    // Payment Order Sent Date
+                    // 15 Payment Order Sent Date
                     try {
                         if (row.getCell(15) != null && !row.getCell(15).toString().isEmpty() && row.getCell(15).toString().matches("\\d{2}-[A-Za-z]{3}-\\d{4}")) {
                             LocalDate paymentOrderSentDate = LocalDate.parse(row.getCell(15).toString(), formatter);
@@ -729,22 +730,25 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                             fee.setPaymentOrderSentDate(null);
                         }
                     } catch (Exception e) {
-                        logRowError(row, 15, e);
+                        logRowError(row, 14, e);
                         fee.setPaymentOrderSentDate(null);
                     }
 
-                    // order status
+                    // 18 order status
                     try {
-                        fee.setOrderStatus(ORDER_STATUS_MAPPING.get(row.getCell(22).toString()));
+                        fee.setOrderStatus(ORDER_STATUS_MAPPING.get(row.getCell(22) != null ?
+                                row.getCell(22).toString() : "Unknown order status"
+                                ));
                     } catch (Exception e) {
                         fee.setOrderStatus(null);
-                        logRowError(row, 22, e);
+                        logRowError(row, 17, e);
                     }
 
                     List<String> canceledProjects = new ArrayList<>();
+                    //16 გაუქმებული პროექტი
+                    canceledProjects.add(getStringCellValue(row.getCell(15)));
+                    //16 გაუქმებული პროექტი
                     canceledProjects.add(getStringCellValue(row.getCell(16)));
-                    canceledProjects.add(getStringCellValue(row.getCell(17)));
-                    canceledProjects.add(getStringCellValue(row.getCell(18)));
                     fee.setCanceledProject(canceledProjects);
 
                     fee.setStatus(Status.TRANSFERRED);
@@ -765,7 +769,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
 
         } catch (Exception e) {
             System.err.println("🚨 Critical error reading file :" + file.getOriginalFilename() + "row: " + rowNum);
-            e.printStackTrace();
+            System.out.println(e.getMessage());
             return 0;
         }
     }
