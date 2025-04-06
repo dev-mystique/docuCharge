@@ -5,6 +5,8 @@ import jakarta.persistence.GenerationType;
 import java.time.LocalDateTime;
 
 import lombok.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Nationalized;
 
 @Data
@@ -14,6 +16,8 @@ import org.hibernate.annotations.Nationalized;
 @Entity
 @ToString
 @Getter
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "entityCache")
 public class ExtractionTask {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

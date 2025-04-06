@@ -4,10 +4,7 @@ import com.example.mssqll.models.ConnectionFee;
 import com.example.mssqll.models.Status;
 import com.example.mssqll.models.ExtractionTask;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,5 +50,7 @@ public interface ConnectionFeeRepository extends JpaRepository<ConnectionFee, Lo
     @Query("SELECT cf FROM ConnectionFee cf WHERE cf.parent.id = :parentId AND cf.status = 'REMINDER'")
     Optional<ConnectionFee> findReminderChildByParentId(@Param("parentId") Long parentId);
 
+    @EntityGraph(attributePaths = {"parent"})
+    List<ConnectionFee> findAll(Specification<ConnectionFee> spec);
 
 }

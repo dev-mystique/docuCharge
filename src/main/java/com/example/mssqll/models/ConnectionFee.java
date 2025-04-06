@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cache;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,6 +32,8 @@ import java.util.List;
 @Setter
 @Builder
 @AllArgsConstructor
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "entityCache")
 public class ConnectionFee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -131,13 +135,15 @@ public class ConnectionFee {
     @Nullable
     private User changePerson;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Lazy loading to improve performance
+    @ManyToOne // Lazy loading to improve performance
     @JsonIgnore
     @JoinColumn(name = "parent_id", nullable = true)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private ConnectionFee parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     @Where(clause = "status != 'SOFT_DELETED'") // Filter out soft-deleted children
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE) // Cache parent entity
     private List<ConnectionFee> children ;
 
     @Nullable

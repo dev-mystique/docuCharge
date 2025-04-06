@@ -9,6 +9,7 @@ import com.example.mssqll.repository.ConnectionFeeRepository;
 import com.example.mssqll.repository.ExtractionRepository;
 import com.example.mssqll.repository.ExtractionTaskRepository;
 import com.example.mssqll.service.ConnectionFeeService;
+import com.example.mssqll.specifications.ConnectionFeeSpecification;
 import com.example.mssqll.utiles.exceptions.FileAlreadyTransferredException;
 import com.example.mssqll.utiles.exceptions.ResourceNotFoundException;
 import lombok.SneakyThrows;
@@ -18,6 +19,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -351,6 +353,8 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
 
         return new ByteArrayInputStream(out.toByteArray());
     }
+    @Cacheable(value = "excelCache", key = "#filters.toString()")
+
 
     @SneakyThrows
     @Override
@@ -560,7 +564,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
     }
 
     private ConnectionFeeResponseDto baseCast(ConnectionFee cf) {
-        return ConnectionFeeResponseDto.builder()
+        ConnectionFeeResponseDto cfdto= ConnectionFeeResponseDto.builder()
                 .id(cf.getId())
                 .orderStatus(cf.getOrderStatus())
                 .status(cf.getStatus())
@@ -588,6 +592,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                 .note(cf.getNote())
                 .historyId(cf.getHistoryId())
                 .build();
+        return cfdto;
     }
 
     private UserResponseDto castUserToDto(User user) {

@@ -120,7 +120,6 @@ public class ConnectionFeeController {
         if (orderStatus != null) {
             updatedFilters.put("status", orderStatus);
         }
-
         Specification<ConnectionFee> spec = ConnectionFeeSpecification.getSpecifications(updatedFilters);
 
         PagedModel<?> resPage = connectionFeeService.letDoFilter(spec, adjustedPage, size, sortBy, sortDir);
@@ -216,11 +215,11 @@ public class ConnectionFeeController {
     }
 
     @GetMapping("/download-ext")
-    public ResponseEntity<Resource> downloadFile(@RequestParam String fileName,@RequestParam String accessToken) {
+    public ResponseEntity<Resource> downloadFile(@RequestParam String fileName, @RequestParam String accessToken) {
         TokenValidationResult res = jwtService.validateTokenWithoutUserName(accessToken);
-                if (!res.isValid()) {
-                    throw new TokenValidationException(res.getMessage());
-                }
+        if (!res.isValid()) {
+            throw new TokenValidationException(res.getMessage());
+        }
         try {
             System.out.println("sxva ram xdeba");
             // Decode the filename in case it's URL encoded

@@ -21,11 +21,9 @@ public class ConnectionFeeSpecification {
     public static Specification<ConnectionFee> getSpecifications(Map<String, Object> filters) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-
             if (!filters.containsKey("status")) {
                 predicates.add(criteriaBuilder.notEqual(root.get("status"), "SOFT_DELETED"));
             }
-
             filters.forEach((key, value) -> {
                 if (value != null) {
                     switch (key) {
@@ -141,13 +139,12 @@ public class ConnectionFeeSpecification {
                             Join<ConnectionFee, ExtractionTask> extractionTaskJoin = root.join("extractionTask");
                             predicates.add(criteriaBuilder.like(extractionTaskJoin.get("fileName"), "%" + value + "%"));
                             break;
-                        case "history":
-                            predicates.add(criteriaBuilder.equal(root.get("history_id"), value));
+                        case "history_id":
+                            predicates.add(criteriaBuilder.equal(root.get("historyId"), value));
                             break;
                         case "download":
                             System.out.println("Downloading records...");
-                            // Exclude records where status is REMINDER
-                            predicates.add(criteriaBuilder.notEqual(root.get("status"), Status.REMINDER));
+                            predicates.add(criteriaBuilder.notEqual(root.get("status"), "REMINDER"));
                             break;
 
                     }

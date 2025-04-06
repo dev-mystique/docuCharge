@@ -1,10 +1,12 @@
 package com.example.mssqll.models;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cache;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +27,8 @@ import java.util.List;
                 @Index(name = "idx_user_email", columnList = "email")
         }
 )
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "entityCache")
 public class User implements UserDetails {
 
     @Id
