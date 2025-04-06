@@ -30,7 +30,7 @@
         <property name="hibernate.cache.use_query_cache">false</property>
         <property name="javax.cache.provider">org.ehcache.jsr107.EhcacheCachingProvider</property>
         <property name="hibernate.javax.cache.uri">ehcache.xml</property>
-        <!-- Specify annotated classes -->
+
         <mapping class="com.example.mssqll.models.ConnectionFee"/>
         <mapping class="com.example.mssqll.models.User"/>
         <mapping class="com.example.mssqll.models.ExtractionTask"/>
