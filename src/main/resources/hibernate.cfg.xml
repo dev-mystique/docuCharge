@@ -6,9 +6,9 @@
 
         <!-- JDBC Database Connection Settings -->
         <property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
-        <property name="hibernate.connection.url">jdbc:sqlserver://localhost:1433;databaseName=epg;encrypt=true;trustServerCertificate=true;characterEncoding=UTF-8;</property>
-        <property name="hibernate.connection.username">sa</property>
-        <property name="hibernate.connection.password">123456</property>
+        <property name="hibernate.connection.url">jdbc:sqlserver://BILLINGDB00.energo-pro.ge:1433;databaseName=project_pay;selectMethod=cursor;encrypt=true;trustServerCertificate=true</property>
+        <property name="hibernate.connection.username">app_project_pay</property>
+        <property name="hibernate.connection.password">RgWb5#Yw8f;h</property>
 
         <!-- JDBC connection pool settings -->
         <property name="hibernate.c3p0.min_size">5</property>
@@ -16,14 +16,11 @@
         <property name="hibernate.c3p0.timeout">300</property>
 
         <!-- SQL dialect -->
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
-
+        <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
         <!-- Enable Hibernate to automatically create/drop tables -->
         <property name="hibernate.hbm2ddl.auto">create-drop</property>
-
         <!-- Show SQL statements in console -->
-        <property name="hibernate.show_sql">true</property>
-
+        <property name="hibernate.show_sql">false</property>
         <!-- Caching configuration -->
         <property name="hibernate.cache.region.factory_class">org.hibernate.cache.jcache.JCacheRegionFactory</property>
         <property name="hibernate.cache.use_second_level_cache">true</property>
