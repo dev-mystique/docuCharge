@@ -353,6 +353,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
 
         return new ByteArrayInputStream(out.toByteArray());
     }
+
     @Cacheable(value = "excelCache", key = "#filters.toString()")
 
 
@@ -534,8 +535,20 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
 
     @Override
     public PagedModel<?> letDoFilter(Specification<ConnectionFee> spec, int page, int size, String sortBy, String sortDir) {
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
-        return new PagedModel<>(castToDtos(connectionFeeRepository.findAll(spec, PageRequest.of(page, size, sort))));
+        Sort.Direction direction;
+        try {
+            direction = Sort.Direction.fromString(sortDir);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            direction = Sort.Direction.ASC;
+        }
+
+        Sort sort = Sort.by(direction, sortBy);
+        System.out.println(sort);
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        Page<ConnectionFee> pg = connectionFeeRepository.findAll(spec, pageRequest);
+        return new PagedModel<>(castToDtos(
+                pg
+        ));
     }
 
     private Page<ConnectionFeeResponseDto> castToDtos(Page<ConnectionFee> page) {
@@ -564,7 +577,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
     }
 
     private ConnectionFeeResponseDto baseCast(ConnectionFee cf) {
-        ConnectionFeeResponseDto cfdto= ConnectionFeeResponseDto.builder()
+        ConnectionFeeResponseDto cfdto = ConnectionFeeResponseDto.builder()
                 .id(cf.getId())
                 .orderStatus(cf.getOrderStatus())
                 .status(cf.getStatus())
@@ -700,7 +713,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                     }
 
                     fee.setTotalAmount(getDoubleCellValue(row.getCell(7)));//8 ბრუნვა
-                    fee.setPurpose(getStringCellValue(row.getCell(8))!=null ? getStringCellValue(row.getCell(8)) :" ");//9 დანიშნულება
+                    fee.setPurpose(getStringCellValue(row.getCell(8)) != null ? getStringCellValue(row.getCell(8)) : " ");//9 დანიშნულება
                     fee.setDescription(getStringCellValue(row.getCell(9))); //10 დამატებითი ინფირმაცია
                     fee.setTax(getStringCellValue(row.getCell(10)));//11ტაქსი
                     fee.setNote(getStringCellValue(row.getCell(13)));// 13 შენიშვნა
@@ -743,7 +756,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                     try {
                         fee.setOrderStatus(ORDER_STATUS_MAPPING.get(row.getCell(22) != null ?
                                 row.getCell(22).toString() : "Unknown order status"
-                                ));
+                        ));
                     } catch (Exception e) {
                         fee.setOrderStatus(null);
                         logRowError(row, 17, e);

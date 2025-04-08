@@ -22,7 +22,7 @@ public class ConnectionFeeSpecification {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (!filters.containsKey("status")) {
-                predicates.add(criteriaBuilder.notEqual(root.get("status"), "SOFT_DELETED"));
+                predicates.add(criteriaBuilder.notEqual(root.get("status"), Status.SOFT_DELETED));
             }
             filters.forEach((key, value) -> {
                 if (value != null) {
@@ -144,7 +144,7 @@ public class ConnectionFeeSpecification {
                             break;
                         case "download":
                             System.out.println("Downloading records...");
-                            predicates.add(criteriaBuilder.notEqual(root.get("status"), "REMINDER"));
+                            predicates.add(criteriaBuilder.notEqual(root.get("status"), Status.REMINDER));
                             break;
 
                     }
