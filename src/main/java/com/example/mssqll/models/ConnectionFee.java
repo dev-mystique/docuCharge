@@ -32,8 +32,8 @@ import java.util.List;
 @Setter
 @Builder
 @AllArgsConstructor
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "entityCache")
+//@Cacheable
+//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "entityCache")
 public class ConnectionFee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

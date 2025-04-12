@@ -154,8 +154,7 @@ public class ConnectionFeeController {
             throw new TokenValidationException(res.getMessage());
         }
         filters.put("download","REMINDER");
-        Specification<ConnectionFee> spec = ConnectionFeeSpecification.getSpecifications((Map) filters);
-        ByteArrayInputStream excelStream = connectionFeeService.createExcel(connectionFeeService.getDownloadDataBySpec(spec));
+        ByteArrayInputStream excelStream = connectionFeeService.createExcel(connectionFeeService.getFeeCustom(filters));
 
         HttpHeaders headers = new HttpHeaders();
         String time = LocalDateTime.now(ZoneId.of("Asia/Tbilisi"))

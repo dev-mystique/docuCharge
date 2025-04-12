@@ -5,11 +5,11 @@ import com.example.mssqll.dto.response.ConnectionFeeChildrenDTO;
 import com.example.mssqll.dto.response.ConnectionFeeResponseDto;
 import com.example.mssqll.dto.response.UserResponseDto;
 import com.example.mssqll.models.*;
+import com.example.mssqll.repository.ConnectionFeeCustomRepository;
 import com.example.mssqll.repository.ConnectionFeeRepository;
 import com.example.mssqll.repository.ExtractionRepository;
 import com.example.mssqll.repository.ExtractionTaskRepository;
 import com.example.mssqll.service.ConnectionFeeService;
-import com.example.mssqll.specifications.ConnectionFeeSpecification;
 import com.example.mssqll.utiles.exceptions.FileAlreadyTransferredException;
 import com.example.mssqll.utiles.exceptions.ResourceNotFoundException;
 import lombok.SneakyThrows;
@@ -48,12 +48,17 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
     private final ExtractionRepository extractionRepository;
     @Autowired
     private final ExtractionTaskRepository extractionTaskRepository;
+    @Autowired
+    private final ConnectionFeeCustomRepository connectionFeeCustomRepository;
 
     public ConnectionFeeServiceImpl(ConnectionFeeRepository connectionFeeRepository,
-                                    ExtractionRepository extractionRepository, ExtractionTaskRepository extractionTaskRepository) {
+                                    ExtractionRepository extractionRepository,
+                                    ExtractionTaskRepository extractionTaskRepository,
+                                    ConnectionFeeCustomRepository connectionFeeCustomRepository) {
         this.connectionFeeRepository = connectionFeeRepository;
         this.extractionRepository = extractionRepository;
         this.extractionTaskRepository = extractionTaskRepository;
+        this.connectionFeeCustomRepository = connectionFeeCustomRepository;
     }
 
     @Override
@@ -313,6 +318,9 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                 "გაუქმებული პროექტები",//15
                 "მშობელი"
         };
+        System.out.println("dads");
+        System.out.println("Class: " + connectionFees.get(0).getClass());
+        System.out.println("Is null? " + (connectionFees.get(0) == null));
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Connection Fees");
@@ -355,7 +363,6 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
     }
 
     @Cacheable(value = "excelCache", key = "#filters.toString()")
-
 
     @SneakyThrows
     @Override
@@ -792,6 +799,12 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
         }
     }
 
+    @Override
+    public List<ConnectionFee[]> getFeeCustom(Map<String, String> filters) {
+        List<ConnectionFee[]> connectionFees = this.connectionFeeCustomRepository.fetchConnectionFees(filters);
+        return new ArrayList<>(connectionFees);
+    }
+
     private void logRowError(Row row, int columnIndex, Exception e) {
         System.out.println("❌ Error processing row " + (row.getRowNum() + 1) +
                 " at column " + (columnIndex + 1) + ": " + e.getMessage());
@@ -866,6 +879,5 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
         }
         return null;
     }
-
 
 }

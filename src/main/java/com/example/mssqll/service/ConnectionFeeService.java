@@ -42,4 +42,6 @@ public interface ConnectionFeeService {
     List<ConnectionFee> getDownloadDataBySpec(Specification<ConnectionFee> spec);
 
     Integer uploadHistory(MultipartFile file) throws IOException;
+
+    List<ConnectionFee[]> getFeeCustom(Map<String, String> filters);
 }
