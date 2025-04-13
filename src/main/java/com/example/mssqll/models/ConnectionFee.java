@@ -57,7 +57,7 @@ public class ConnectionFee {
     @Nationalized
     private String region;
 
-    @Column(name = "sevice_center")
+    @Column(name = "service_center")
     @Nationalized
     private String serviceCenter;
 
@@ -99,7 +99,7 @@ public class ConnectionFee {
     @Column(name = "transfer_date")
     private LocalDateTime transferDate;
 
-    @Column(name = "exextraction_id")
+    @Column(name = "extraction_id")
     @Nullable
     private Long extractionId;
 

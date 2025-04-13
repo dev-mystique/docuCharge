@@ -146,28 +146,43 @@ public class ConnectionFeeController {
     }
 
     @GetMapping("/download")
-    public ResponseEntity<byte[]> downloadExcel(
+    public ResponseEntity<?> downloadExcel(
             @RequestParam Map<String, String> filters,
-            @RequestParam String accessToken) throws IOException {
+            @RequestParam String accessToken) {
         TokenValidationResult res = jwtService.validateTokenWithoutUserName(accessToken);
         if (!res.isValid()) {
             throw new TokenValidationException(res.getMessage());
         }
-        filters.put("download","REMINDER");
-        ByteArrayInputStream excelStream = connectionFeeService.createExcel(connectionFeeService.getFeeCustom(filters));
+        filters.put("download", "REMINDER");
+        List<ConnectionFee> resti = connectionFeeService.getFeeCustom(filters);
 
-        HttpHeaders headers = new HttpHeaders();
-        String time = LocalDateTime.now(ZoneId.of("Asia/Tbilisi"))
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        headers.add("Content-Disposition",
-                "attachment; filename=" +
-                        time +
-                        " connection_fees.xlsx");
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                .body(excelStream.readAllBytes());
+        return ResponseEntity.ok().body(resti);
     }
+//
+//    @GetMapping("/download")
+//    public ResponseEntity<byte[]> downloadExcel(
+//            @RequestParam Map<String, String> filters,
+//            @RequestParam String accessToken) throws IOException {
+//        TokenValidationResult res = jwtService.validateTokenWithoutUserName(accessToken);
+//        if (!res.isValid()) {
+//            throw new TokenValidationException(res.getMessage());
+//        }
+//        filters.put("download", "REMINDER");
+//        List<ConnectionFee> resti = connectionFeeService.getFeeCustom(filters);
+//        ByteArrayInputStream excelStream = connectionFeeService.createExcel(resti);
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        String time = LocalDateTime.now(ZoneId.of("Asia/Tbilisi"))
+//                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+//        headers.add("Content-Disposition",
+//                "attachment; filename=" +
+//                        time +
+//                        " connection_fees.xlsx");
+//        return ResponseEntity.ok()
+//                .headers(headers)
+//                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+//                .body(excelStream.readAllBytes());
+//    }
 
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','OPERATOR')")
     @PostMapping("/divide-fee/{id}")

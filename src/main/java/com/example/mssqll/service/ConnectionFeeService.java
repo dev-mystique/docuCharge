@@ -43,5 +43,5 @@ public interface ConnectionFeeService {
 
     Integer uploadHistory(MultipartFile file) throws IOException;
 
-    List<ConnectionFee[]> getFeeCustom(Map<String, String> filters);
+    List<ConnectionFee> getFeeCustom(Map<String, String> filters);
 }

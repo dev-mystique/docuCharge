@@ -318,9 +318,6 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                 "გაუქმებული პროექტები",//15
                 "მშობელი"
         };
-        System.out.println("dads");
-        System.out.println("Class: " + connectionFees.get(0).getClass());
-        System.out.println("Is null? " + (connectionFees.get(0) == null));
 
         XSSFWorkbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Connection Fees");
@@ -800,9 +797,8 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
     }
 
     @Override
-    public List<ConnectionFee[]> getFeeCustom(Map<String, String> filters) {
-        List<ConnectionFee[]> connectionFees = this.connectionFeeCustomRepository.fetchConnectionFees(filters);
-        return new ArrayList<>(connectionFees);
+    public List<ConnectionFee> getFeeCustom(Map<String, String> filters) {
+        return this.connectionFeeCustomRepository.fetchConnectionFees(filters);
     }
 
     private void logRowError(Row row, int columnIndex, Exception e) {
