@@ -9,8 +9,8 @@
     <!-- lookup parent from repository -->
   </parent>
   <groupId>com.example</groupId>
-  <artifactId>docu</artifactId>
-  <version>0.0.1</version>
+  <artifactId>docu-prod</artifactId>
+  <version>1.1.5</version>
   <name>mssqll</name>
   <description>mssqll</description>
   <url/>
