@@ -137,11 +137,6 @@ public class ConnectionFeeCustomRepository {
 
         List<ConnectionFee> connectionFees = jdbcTemplate.query(sql.toString(), paramValues.toArray(), connectionFeeRowMapper());
 
-        // Fetch and attach canceled projects
-        Map<Long, List<CanceledProject>> canceledMap = fetchCanceledProjectsForFees(connectionFees);
-        for (ConnectionFee fee : connectionFees) {
-            fee.setCanceledProject(canceledMap.getOrDefault(fee.getId(), Collections.emptyList()));
-        }
 
         return connectionFees;
     }
