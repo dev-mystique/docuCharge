@@ -1,6 +1,8 @@
 package com.example.mssqll.repository;
 
 import com.example.mssqll.models.*;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,8 +30,7 @@ public class ConnectionFeeCustomRepository {
                         "FROM connection_fees cf " +
                         "LEFT JOIN extraction_task et ON cf.extraction_task_id = et.id " +
                         "LEFT JOIN users tp ON cf.transfer_person = tp.id " +
-                        "LEFT JOIN users cp ON cf.change_person = cp.id " +
-                        "LEFT JOIN connection_fee_canceled_project cfcp ON cf.id = cfcp.connection_fee_id "
+                        "LEFT JOIN users cp ON cf.change_person = cp.id "
         );
 
         List<Object> paramValues = new ArrayList<>();
@@ -134,7 +135,15 @@ public class ConnectionFeeCustomRepository {
             sql.append("WHERE ").append(String.join(" AND ", whereClauses));
         }
 
-        return jdbcTemplate.query(sql.toString(), paramValues.toArray(), connectionFeeRowMapper());
+        List<ConnectionFee> connectionFees = jdbcTemplate.query(sql.toString(), paramValues.toArray(), connectionFeeRowMapper());
+
+        // Fetch and attach canceled projects
+        Map<Long, List<CanceledProject>> canceledMap = fetchCanceledProjectsForFees(connectionFees);
+        for (ConnectionFee fee : connectionFees) {
+            fee.setCanceledProject(canceledMap.getOrDefault(fee.getId(), Collections.emptyList()));
+        }
+
+        return connectionFees;
     }
 
     private RowMapper<ConnectionFee> connectionFeeRowMapper() {
@@ -227,5 +236,12 @@ public class ConnectionFeeCustomRepository {
     private static OrderStatus safeFromOrdinal(int ordinal) {
         OrderStatus[] values = OrderStatus.values();
         return (ordinal >= 0 && ordinal < values.length) ? values[ordinal] : null;
+    }
+
+    @Setter
+    @Getter
+    public static class CanceledProject {
+        private Long id;
+        private String projectNumber;
     }
 }
