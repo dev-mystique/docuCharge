@@ -13,6 +13,7 @@ import com.example.mssqll.utiles.resonse.ApiResponse;
 import org.apache.poi.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PagedModel;
@@ -148,15 +149,26 @@ public class ConnectionFeeController {
     @GetMapping("/download")
     public ResponseEntity<?> downloadExcel(
             @RequestParam Map<String, String> filters,
-            @RequestParam String accessToken) {
+            @RequestParam String accessToken) throws IOException {
         TokenValidationResult res = jwtService.validateTokenWithoutUserName(accessToken);
         if (!res.isValid()) {
             throw new TokenValidationException(res.getMessage());
         }
         filters.put("download", "REMINDER");
         List<ConnectionFee> resti = connectionFeeService.getFeeCustom(filters);
-
-        return ResponseEntity.ok().body(resti);
+        ByteArrayInputStream excelStream = connectionFeeService.createExcel(resti);
+        HttpHeaders headers = new HttpHeaders();
+        String time = LocalDateTime.now(ZoneId.of("Asia/Tbilisi"))
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        headers.add("Content-Disposition",
+                "attachment; filename=" +
+                        time +
+                        " connection_fees.csv");
+//        headers.add("Content-Disposition", "attachment; filename=connection_fees.csv");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(new InputStreamResource(excelStream));
     }
 //
 //    @GetMapping("/download")

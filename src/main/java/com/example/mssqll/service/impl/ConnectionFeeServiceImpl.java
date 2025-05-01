@@ -31,9 +31,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -300,41 +299,21 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
     @Override
     public ByteArrayInputStream createExcel(List<ConnectionFee> connectionFees) throws IOException {
         String[] columns = {
-                "ID", //0
-                "ორდერის N",//1
-                "რეგიონი",//2
-                "სერვის ცენტრი",//3
-                "პროექტის ნომერი",//4
-                "გარკვევის თარიღი",//5
-                "შეცვლის თარიღი",//6
-                "შენიშვნა",//7
-                "გადმოტანის თარიღი",//8
-                "ჩარიცხვის თარიღი",//9
-                "თანხა",//10
-                "გადამხდელის იდენტიფიკატორი",//11
-                "მიზანი",//12
-                "აღწერა",//13
-                "შემცველელი",//14
-                "გაუქმებული პროექტები",//15
-                "მშობელი"
+                "ID", "ორდერის N", "რეგიონი", "სერვის ცენტრი", "პროექტის ნომერი",
+                "გარკვევის თარიღი", "შეცვლის თარიღი", "შენიშვნა", "გადმოტანის თარიღი",
+                "ჩარიცხვის თარიღი", "თანხა", "გადამხდელის იდენტიფიკატორი", "მიზანი",
+                "აღწერა", "შემცველელი", "გაუქმებული პროექტები", "მშობელი"
         };
 
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Connection Fees");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.write(0xEF);
+        out.write(0xBB);
+        out.write(0xBF);
+        OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
 
-        Row headerRow = sheet.createRow(0);
-        XSSFFont boldFont = workbook.createFont();
-        boldFont.setBold(true);
-        XSSFCellStyle boldCellStyle = workbook.createCellStyle();
-        boldCellStyle.setFont(boldFont);
+        writer.write(String.join(",", columns) + "\n");
 
-        for (int i = 0; i < columns.length; i++) {
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(columns[i]);
-            cell.setCellStyle(boldCellStyle);
-        }
         List<ConnectionFee> flatList = new ArrayList<>();
-
         for (ConnectionFee fee : connectionFees) {
             flatList.add(fee);
             flatList.addAll(fee.getChildren().stream()
@@ -343,24 +322,27 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                     .toList());
         }
 
-        int rowIdx = 1;
-        for (ConnectionFee connectionFee : flatList) {
-            Row row = sheet.createRow(rowIdx);
+        for (ConnectionFee fee : flatList) {
             for (int i = 0; i < columns.length; i++) {
-                Cell cell = row.createCell(i);
-                cell.setCellValue(getCellValue(connectionFee, i));
+                String value = getCellValue(fee, i);
+                if (value != null && value.contains(",")) {
+                    writer.write("\"" + value.replace("\"", "\"\"") + "\"");
+                } else {
+                    writer.write(value != null ? value : "");
+                }
+                if (i != columns.length - 1) {
+                    writer.write(",");
+                }
             }
-            rowIdx++;
+            writer.write("\n");
         }
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        workbook.write(out);
-        workbook.close();
 
+        writer.flush();
         return new ByteArrayInputStream(out.toByteArray());
     }
 
-    @Cacheable(value = "excelCache", key = "#filters.toString()")
 
+    @Cacheable(value = "excelCache", key = "#filters.toString()")
     @SneakyThrows
     @Override
     public void divideFee(Long feeId, Double[] arr) {
@@ -525,7 +507,13 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
             case 13 -> connectionFee.getDescription();
             case 14 ->
                     connectionFee.getChangePerson().getLastName() + " " + connectionFee.getChangePerson().getFirstName();
-            case 15 -> connectionFee.getCanceledOrders().toString();
+            case 15 -> {
+                if (connectionFee.getCanceledProject() != null) {
+                    System.out.println(connectionFee.getCanceledProject().toString());
+                    yield connectionFee.getCanceledProject().toString();
+                }
+                yield "";
+            }
             case 16 -> {
                 if (connectionFee.getParent() != null) {
                     yield connectionFee.getParent().getId().toString();
