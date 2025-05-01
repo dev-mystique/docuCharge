@@ -139,7 +139,7 @@ public class ConnectionFeeCustomRepository {
         sql.append(" group by cp.last_name, et.id, et.date,cp.id, tp.first_name,tp.last_name,cp.first_name,\n" +
                 "         cp.role,cp.created_at,cp.updated_at,\n" +
                 "         tp.email, cp.email, et.file_name, et.send_date, cf.id, change_date,\n" +
-                "         clarification_date, description, extraction_date, exextraction_id, first_withdraw_type,\n" +
+                "         clarification_date, description, extraction_date, extraction_id, first_withdraw_type,\n" +
                 "         history_id, note, ordern, order_status, payment_order_sent_date, project_id, purpose,\n" +
                 "         queue_number, region, sevice_center, cf.status, tax_id, total_amount, transfer_date,\n" +
                 "         treasury_refund_date, withdraw_type, change_person, extraction_task_id, parent_id, transfer_person,\n" +

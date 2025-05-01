@@ -499,8 +499,18 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                 yield "";
             }
             case 7 -> connectionFee.getNote();
-            case 8 -> connectionFee.getTransferDate().toString();
-            case 9 -> connectionFee.getExtractionDate().toString();
+            case 8 -> {
+                if (connectionFee.getTransferDate() != null) {
+                    yield connectionFee.getTransferDate().toString();
+                }
+                yield "";
+            }
+            case 9 -> {
+                if (connectionFee.getExtractionDate() != null) {
+                    yield connectionFee.getExtractionDate().toString();
+                }
+                yield "";
+            }
             case 10 -> connectionFee.getTotalAmount().toString();
             case 11 -> connectionFee.getTax();
             case 12 -> connectionFee.getPurpose();
