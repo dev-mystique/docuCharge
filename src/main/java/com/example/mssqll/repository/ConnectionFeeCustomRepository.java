@@ -13,6 +13,7 @@ import java.sql.*;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
@@ -37,6 +38,7 @@ public class ConnectionFeeCustomRepository {
 
         List<Object> paramValues = new ArrayList<>();
         List<String> whereClauses = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
         for (Map.Entry<String, String> entry : filters.entrySet()) {
             String key = entry.getKey();
@@ -64,12 +66,12 @@ public class ConnectionFeeCustomRepository {
 
                 case "clarificationDateStart":
                     whereClauses.add("cf.clarification_date >= ?");
-                    paramValues.add(LocalDateTime.parse(value));
+                    paramValues.add(LocalDateTime.parse(value,formatter));
                     break;
 
                 case "clarificationDateEnd":
                     whereClauses.add("cf.clarification_date <= ?");
-                    paramValues.add(LocalDateTime.parse(value));
+                    paramValues.add(LocalDateTime.parse(value,formatter));
                     break;
 
                 case "changeDateStart":
