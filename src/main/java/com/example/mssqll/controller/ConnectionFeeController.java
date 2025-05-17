@@ -164,7 +164,7 @@ public class ConnectionFeeController {
                 "attachment; filename=" +
                         time +
                         " connection_fees.csv");
-//        headers.add("Content-Disposition", "attachment; filename=connection_fees.csv");
+        System.out.println(resti.size());
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.parseMediaType("text/csv"))

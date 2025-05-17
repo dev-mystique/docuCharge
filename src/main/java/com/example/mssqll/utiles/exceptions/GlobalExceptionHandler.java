@@ -106,7 +106,7 @@ public class GlobalExceptionHandler {
         ex.printStackTrace();
         ErrorResponse errorResponse = new ErrorResponse(
                 "Something went wrong",
-                ex.getStackTrace().toString()
+                ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(errorResponse);

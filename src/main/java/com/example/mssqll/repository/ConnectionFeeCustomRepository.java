@@ -47,13 +47,37 @@ public class ConnectionFeeCustomRepository {
 
             switch (key) {
                 case "orderN":
+                    whereClauses.add("cf.ordern LIKE ?");
+                    paramValues.add("%" + value + "%");
+                    break;
                 case "region":
+                    whereClauses.add("cf.region = ?");
+                    paramValues.add(value);
+                    break;
                 case "serviceCenter":
+                    whereClauses.add("cf.service_center = ?");
+                    paramValues.add(value);
+                    break;
                 case "projectID":
+                    whereClauses.add("cf.project_id LIKE ?");
+                    paramValues.add("%" + value + "%");
+                    break;
                 case "withdrawType":
+                    whereClauses.add("cf.withdraw_type LIKE ?");
+                    paramValues.add("%" + value + "%");
+                    break;
                 case "purpose":
+                    whereClauses.add("cf.purpose LIKE ?");
+                    paramValues.add("%" + value + "%");
+                    break;
                 case "description":
+                    whereClauses.add("cf.description LIKE ?");
+                    paramValues.add("%" + value + "%");
+                    break;
                 case "note":
+                    whereClauses.add("cf.note LIKE ?");
+                    paramValues.add("%" + value + "%");
+                    break;
                 case "tax":
                     whereClauses.add("cf." + key + " LIKE ?");
                     paramValues.add("%" + value + "%");
@@ -73,7 +97,6 @@ public class ConnectionFeeCustomRepository {
                     whereClauses.add("cf.clarification_date <= ?");
                     paramValues.add(LocalDateTime.parse(value,formatter));
                     break;
-
                 case "changeDateStart":
                     whereClauses.add("cf.change_date >= ?");
                     paramValues.add(LocalDateTime.parse(value));
@@ -141,9 +164,9 @@ public class ConnectionFeeCustomRepository {
         sql.append(" group by cp.last_name, et.id, et.date,cp.id, tp.first_name,tp.last_name,cp.first_name,\n" +
                 "         cp.role,cp.created_at,cp.updated_at,\n" +
                 "         tp.email, cp.email, et.file_name, et.send_date, cf.id, change_date,\n" +
-                "         clarification_date, description, extraction_date, exextraction_id, first_withdraw_type,\n" +
+                "         clarification_date, description, extraction_date, extraction_id, first_withdraw_type,\n" +
                 "         history_id, note, ordern, order_status, payment_order_sent_date, project_id, purpose,\n" +
-                "         queue_number, region, sevice_center, cf.status, tax_id, total_amount, transfer_date,\n" +
+                "         queue_number, region, cf.status, tax_id, total_amount, transfer_date,\n" +
                 "         treasury_refund_date, withdraw_type, change_person, extraction_task_id, parent_id, transfer_person,\n" +
                 "         service_center, extraction_id, tp.updated_at, tp.created_at, et.status, tp.role, tp.id");
         List<ConnectionFee> connectionFees = jdbcTemplate.query(sql.toString(), paramValues.toArray(), connectionFeeRowMapper());

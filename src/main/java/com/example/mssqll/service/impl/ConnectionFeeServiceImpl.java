@@ -135,14 +135,13 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userDetails = (User) authentication.getPrincipal();
         existingFee.setStatus(connectionFeeDetails.getStatus());
-        existingFee.setRegion(connectionFeeDetails.getRegion());
-        existingFee.setServiceCenter(connectionFeeDetails.getServiceCenter());
+        existingFee.setRegion(connectionFeeDetails.getRegion().trim());
+        existingFee.setServiceCenter(connectionFeeDetails.getServiceCenter().trim());
         System.out.println(existingFee.getFirstWithdrawType());
         if (existingFee.getFirstWithdrawType() == null) {
-            System.out.println("uraaa");
             existingFee.setFirstWithdrawType(connectionFeeDetails.getWithdrawType());
         }
-        existingFee.setWithdrawType(connectionFeeDetails.getWithdrawType());
+        existingFee.setWithdrawType(connectionFeeDetails.getWithdrawType().trim());
         existingFee.setExtractionTask(connectionFeeDetails.getExtractionTask());
         existingFee.setClarificationDate(connectionFeeDetails.getClarificationDate());
         if (!Objects.equals(existingFee.getProjectID(), connectionFeeDetails.getProjectID())) {
@@ -150,11 +149,11 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
             existingFee.setChangePerson(userDetails);
         }
         existingFee.setExtractionId(connectionFeeDetails.getExtractionId());
-        existingFee.setNote(connectionFeeDetails.getNote());
+        existingFee.setNote(connectionFeeDetails.getNote().trim());
         existingFee.setExtractionDate(connectionFeeDetails.getExtractionDate());
         existingFee.setTotalAmount(connectionFeeDetails.getTotalAmount());
-        existingFee.setPurpose(connectionFeeDetails.getPurpose());
-        existingFee.setDescription(connectionFeeDetails.getDescription());
+        existingFee.setPurpose(connectionFeeDetails.getPurpose().trim());
+        existingFee.setDescription(connectionFeeDetails.getDescription().trim());
         existingFee.setPaymentOrderSentDate(connectionFeeDetails.getPaymentOrderSentDate());//new
         existingFee.setTreasuryRefundDate(connectionFeeDetails.getTreasuryRefundDate());//new
         if (!Objects.equals(existingFee.getProjectID(), connectionFeeDetails.getProjectID())) {
@@ -167,7 +166,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                 proj.add(existingFee.getProjectID());
             }
             existingFee.setCanceledProject(proj);
-            existingFee.setProjectID(connectionFeeDetails.getProjectID());
+            existingFee.setProjectID(connectionFeeDetails.getProjectID().trim());
         }
         if (connectionFeeDetails.getOrderStatus() == OrderStatus.CANCELED) {
             List<String> proj = existingFee.getCanceledProject();
@@ -181,7 +180,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
 
             existingFee.setCanceledProject(proj);
         }
-        existingFee.setProjectID(connectionFeeDetails.getProjectID());
+        existingFee.setProjectID(connectionFeeDetails.getProjectID().trim());
 
         if (!Objects.equals(existingFee.getOrderN(), connectionFeeDetails.getOrderN())) {
             List<String> newLst = existingFee.getCanceledOrders();
@@ -326,6 +325,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
             for (int i = 0; i < columns.length; i++) {
                 String value = getCellValue(fee, i);
                 if (value != null && value.contains(",")) {
+                    value = value.replace("\n", "").replace("\r", "");
                     writer.write("\"" + value.replace("\"", "\"\"") + "\"");
                 } else {
                     writer.write(value != null ? value : "");
