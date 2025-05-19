@@ -23,18 +23,7 @@ public class ConnectionFeeCustomRepository {
     private JdbcTemplate jdbcTemplate;
 
     public List<ConnectionFee> fetchConnectionFees(Map<String, String> filters) {
-        StringBuilder sql = new StringBuilder(
-                "SELECT cf.*, " +
-                        "et.id AS et_id, et.date AS et_date, et.send_date AS et_send_date, et.file_name AS et_file_name, et.status AS et_status,\n " +
-                        "tp.id AS tp_id, tp.first_name AS tp_first_name, tp.last_name AS tp_last_name, tp.email AS tp_email, tp.role AS tp_role, tp.created_at AS tp_created_at, tp.updated_at AS tp_updated_at,\n " +
-                        "cp.id AS cp_id, cp.first_name AS cp_first_name, cp.last_name AS cp_last_name, cp.email AS cp_email, cp.role AS cp_role, cp.created_at AS cp_created_at, cp.updated_at AS cp_updated_at,\n " +
-                        "STRING_AGG(CONVERT(VARCHAR, cfp.canceled_project), ', ') AS canceled_projects\n " +
-                        "FROM connection_fees cf\n " +
-                        "LEFT JOIN extraction_task et ON cf.extraction_task_id = et.id\n " +
-                        "LEFT JOIN users tp ON cf.transfer_person = tp.id\n " +
-                        "LEFT JOIN users cp ON cf.change_person = cp.id\n " +
-                        "LEFT JOIN connection_fee_canceled_project cfp ON cf.id = cfp.connection_fee_id\n "
-        );
+        StringBuilder sql = new StringBuilder("SELECT cf.*, " + "et.id AS et_id, et.date AS et_date, et.send_date AS et_send_date, et.file_name AS et_file_name, et.status AS et_status,\n " + "tp.id AS tp_id, tp.first_name AS tp_first_name, tp.last_name AS tp_last_name, tp.email AS tp_email, tp.role AS tp_role, tp.created_at AS tp_created_at, tp.updated_at AS tp_updated_at,\n " + "cp.id AS cp_id, cp.first_name AS cp_first_name, cp.last_name AS cp_last_name, cp.email AS cp_email, cp.role AS cp_role, cp.created_at AS cp_created_at, cp.updated_at AS cp_updated_at,\n " + "STRING_AGG(CONVERT(VARCHAR, cfp.canceled_project), ', ') AS canceled_projects\n " + "FROM connection_fees cf\n " + "LEFT JOIN extraction_task et ON cf.extraction_task_id = et.id\n " + "LEFT JOIN users tp ON cf.transfer_person = tp.id\n " + "LEFT JOIN users cp ON cf.change_person = cp.id\n " + "LEFT JOIN connection_fee_canceled_project cfp ON cf.id = cfp.connection_fee_id\n ");
 
         List<Object> paramValues = new ArrayList<>();
         List<String> whereClauses = new ArrayList<>();
@@ -90,12 +79,12 @@ public class ConnectionFeeCustomRepository {
 
                 case "clarificationDateStart":
                     whereClauses.add("cf.clarification_date >= ?");
-                    paramValues.add(LocalDateTime.parse(value,formatter));
+                    paramValues.add(LocalDateTime.parse(value, formatter));
                     break;
 
                 case "clarificationDateEnd":
                     whereClauses.add("cf.clarification_date <= ?");
-                    paramValues.add(LocalDateTime.parse(value,formatter));
+                    paramValues.add(LocalDateTime.parse(value, formatter));
                     break;
                 case "changeDateStart":
                     whereClauses.add("cf.change_date >= ?");
@@ -161,14 +150,7 @@ public class ConnectionFeeCustomRepository {
         if (!whereClauses.isEmpty()) {
             sql.append("WHERE ").append(String.join(" AND ", whereClauses));
         }
-        sql.append(" group by cp.last_name, et.id, et.date,cp.id, tp.first_name,tp.last_name,cp.first_name,\n" +
-                "         cp.role,cp.created_at,cp.updated_at,\n" +
-                "         tp.email, cp.email, et.file_name, et.send_date, cf.id, change_date,\n" +
-                "         clarification_date, description, extraction_date, extraction_id, first_withdraw_type,\n" +
-                "         history_id, note, ordern, order_status, payment_order_sent_date, project_id, purpose,\n" +
-                "         queue_number, region, cf.status, tax_id, total_amount, transfer_date,\n" +
-                "         treasury_refund_date, withdraw_type, change_person, extraction_task_id, parent_id, transfer_person,\n" +
-                "         service_center, extraction_id, tp.updated_at, tp.created_at, et.status, tp.role, tp.id");
+        sql.append(" group by cp.last_name, et.id, et.date,cp.id, tp.first_name,tp.last_name,cp.first_name,\n" + "         cp.role,cp.created_at,cp.updated_at,\n" + "         tp.email, cp.email, et.file_name, et.send_date, cf.id, change_date,\n" + "         clarification_date, description, extraction_date, extraction_id, first_withdraw_type,\n" + "         history_id, note, ordern, order_status, payment_order_sent_date, project_id, purpose,\n" + "         queue_number, region, cf.status, tax_id, total_amount, transfer_date,\n" + "         treasury_refund_date, withdraw_type, change_person, extraction_task_id, parent_id, transfer_person,\n" + "         service_center, extraction_id, tp.updated_at, tp.created_at, et.status, tp.role, tp.id");
         List<ConnectionFee> connectionFees = jdbcTemplate.query(sql.toString(), paramValues.toArray(), connectionFeeRowMapper());
         return connectionFees;
     }

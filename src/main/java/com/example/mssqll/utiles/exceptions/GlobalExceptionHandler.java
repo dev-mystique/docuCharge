@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,6 +12,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -140,6 +143,15 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public ResponseEntity<Map<String, Object>> handleAsyncRequestNotUsableException(AsyncRequestNotUsableException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", 499);
+        body.put("error", "Client Disconnected");
+        body.put("message", "The client connection was closed before the response could be sent.");
+
+        return ResponseEntity.status(499).body(body);
     }
 
     @Setter

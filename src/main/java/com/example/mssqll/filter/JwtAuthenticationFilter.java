@@ -122,15 +122,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * @param message  The error message.
      * @throws IOException If an input or output exception occurs.
      */
-    private void respondWithError(HttpServletResponse response, int status, String error, String message) throws IOException {
-        response.setStatus(status);
-        response.setContentType("application/json");
+    private void respondWithError(HttpServletResponse response, int status, String error, String message) {
+        try {
+            response.setStatus(status);
+            response.setContentType("application/json");
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", status);
-        body.put("error", error);
-        body.put("message", message);
+            Map<String, Object> body = new HashMap<>();
+            body.put("status", status);
+            body.put("error", error);
+            body.put("message", message);
 
-        objectMapper.writeValue(response.getOutputStream(), body);
+            objectMapper.writeValue(response.getOutputStream(), body);
+        } catch (IOException e) {
+            System.err.println("Failed to write error response: " + e.getMessage());
+        }
     }
+
 }
