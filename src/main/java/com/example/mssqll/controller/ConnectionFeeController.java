@@ -9,6 +9,7 @@ import com.example.mssqll.specifications.ConnectionFeeSpecification;
 import com.example.mssqll.utiles.exceptions.DivideException;
 import com.example.mssqll.utiles.exceptions.ResourceNotFoundException;
 import com.example.mssqll.utiles.exceptions.TokenValidationException;
+import com.example.mssqll.utiles.exceptions.UserIsDeletedException;
 import com.example.mssqll.utiles.resonse.ApiResponse;
 import org.apache.poi.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,6 +61,14 @@ public class ConnectionFeeController {
         return ResponseEntity.ok().body(fees);
     }
 
+    @GetMapping("/exception")
+    public String throwException() {
+        try {
+            throw new AccessDeniedException("This is a test exception!");
+        } catch (Exception e) {
+            throw new UserIsDeletedException(e.getMessage());
+        }
+    }
     @GetMapping("/{id}")
     public ApiResponse<ConnectionFee> getConnectionFee(@PathVariable Long id) {
         Optional<ConnectionFee> fee = connectionFeeService.getFee(id);
