@@ -1,28 +1,34 @@
+name: Java Maven Build & Publish Artifact
+
+on:
+  push:
+
 jobs:
   build_jar:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'
+          distribution: 'zulu'
           cache: maven
       - name: Build with Maven
-        run: mvn -B package -Dspring.profiles.active=prod
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: jar-package
-          path: target/*.jar
-
+        run: mvn -B package -Dspring.profiles.active=prod --file pom.xml
   publish-job:
     runs-on: ubuntu-latest
     needs: build_jar
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
-          name: jar-package
+          java-version: '17'
+          distribution: 'temurin'
+      - run: mvn --batch-mode --update-snapshots verify
+      - run: mkdir staging && cp target/*.jar staging
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Package
           path: staging
-      - run: ls -l staging/
