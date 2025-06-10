@@ -85,6 +85,8 @@ public class ConnectionFee {
     @Column(name = "payment_order_sent_date")
     private LocalDate paymentOrderSentDate;
 
+    private String paymentOrderSentDateStatus;
+
     @ElementCollection
     @Nationalized
     private List<String> canceledOrders;

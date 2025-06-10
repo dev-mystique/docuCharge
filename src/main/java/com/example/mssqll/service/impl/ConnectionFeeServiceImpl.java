@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.type.internal.ImmutableNamedBasicTypeImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -631,52 +635,69 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
         } catch (Exception e) {
             return 0;
         }
+//        Map<Integer, String> PAYMENT_MAPPING = new HashMap<>(); maybe need for old type of excel file
+//        PAYMENT_MAPPING.put(1, "1 (პირველი გადახდა)");
+//        PAYMENT_MAPPING.put(2, "2 (მეორე გადახდა)");
+//        PAYMENT_MAPPING.put(3, "3 (სრული საფასურის გადახდა)");
+//        PAYMENT_MAPPING.put(4, "4 (ერთანი გადახდა, გადანაწილებული რამოდენიმე პროექტის საფასურად)");
+//        PAYMENT_MAPPING.put(5, "5 (სავარაუდოდ არაა ახალი მიერთების საფასური)");
+//        PAYMENT_MAPPING.put(6, "6 (თანხის დაბრუნება)");
+//        PAYMENT_MAPPING.put(7, "7 (გადანაწილებული გადახდა / რამოდენიმეჯერ გადახდა)");
+//        PAYMENT_MAPPING.put(8, "8 (სააბონენტო ბარათზე თანხის დასმა)");
+//        PAYMENT_MAPPING.put(9, "9 (ხაზის მშენებლობა / არარეგულირებული პროექტები (პირველი ან სრული გადახდა))");
+//        PAYMENT_MAPPING.put(10, "10 (სისტემის ნებართვის საფასური)");
+//        PAYMENT_MAPPING.put(19, "19 (ხაზის მშენებლობა / არარეგულირებული პროექტები (მეორე გადახდა))");
+//        PAYMENT_MAPPING.put(11, "11 (სააბონენტო ბარათიდან თანხის გადმოტანა)");
+//        PAYMENT_MAPPING.put(12, "12 (ჯარიმის გადატანა)");
+//        PAYMENT_MAPPING.put(13, "13 (საპროექტო ტრასის შეტანხმება)");
+//        PAYMENT_MAPPING.put(14, "14 (ჰესები DDSH)");
+//        PAYMENT_MAPPING.put(15, "15 (ჰესები DDNA)");
         Map<Integer, String> PAYMENT_MAPPING = new HashMap<>();
-        PAYMENT_MAPPING.put(1, "1 (პირველი გადახდა)");
-        PAYMENT_MAPPING.put(2, "2 (მეორე გადახდა)");
-        PAYMENT_MAPPING.put(3, "3 (სრული საფასურის გადახდა)");
-        PAYMENT_MAPPING.put(4, "4 (ერთანი გადახდა, გადანაწილებული რამოდენიმე პროექტის საფასურად)");
-        PAYMENT_MAPPING.put(5, "5 (სავარაუდოდ არაა ახალი მიერთების საფასური)");
-        PAYMENT_MAPPING.put(6, "6 (თანხის დაბრუნება)");
-        PAYMENT_MAPPING.put(7, "7 (გადანაწილებული გადახდა / რამოდენიმეჯერ გადახდა)");
-        PAYMENT_MAPPING.put(8, "8 (სააბონენტო ბარათზე თანხის დასმა)");
-        PAYMENT_MAPPING.put(9, "9 (ხაზის მშენებლობა / არარეგულირებული პროექტები (პირველი ან სრული გადახდა))");
-        PAYMENT_MAPPING.put(10, "10 (სისტემის ნებართვის საფასური)");
-        PAYMENT_MAPPING.put(19, "19 (ხაზის მშენებლობა / არარეგულირებული პროექტები (მეორე გადახდა))");
-        PAYMENT_MAPPING.put(11, "11 (სააბონენტო ბარათიდან თანხის გადმოტანა)");
-        PAYMENT_MAPPING.put(12, "12 (ჯარიმის გადატანა)");
-        PAYMENT_MAPPING.put(13, "13 (საპროექტო ტრასის შეტანხმება)");
-        PAYMENT_MAPPING.put(14, "14 (ჰესები DDSH)");
-        PAYMENT_MAPPING.put(15, "15 (ჰესები DDNA)");
+        PAYMENT_MAPPING.put(1, "1");
+        PAYMENT_MAPPING.put(2, "2");
+        PAYMENT_MAPPING.put(3, "3");
+        PAYMENT_MAPPING.put(4, "4");
+        PAYMENT_MAPPING.put(5, "5 ");
+        PAYMENT_MAPPING.put(6, "6");
+        PAYMENT_MAPPING.put(7, "7");
+        PAYMENT_MAPPING.put(8, "8");
+        PAYMENT_MAPPING.put(9, "9");
+        PAYMENT_MAPPING.put(10, "10");
+        PAYMENT_MAPPING.put(19, "19");
+        PAYMENT_MAPPING.put(11, "11");
+        PAYMENT_MAPPING.put(12, "12");
+        PAYMENT_MAPPING.put(13, "13");
+        PAYMENT_MAPPING.put(14, "14");
+        PAYMENT_MAPPING.put(15, "15");
 
         Map<String, OrderStatus> ORDER_STATUS_MAPPING = new HashMap<>();
         ORDER_STATUS_MAPPING.put("გაუქმებული", OrderStatus.CANCELED);
         ORDER_STATUS_MAPPING.put("დასასრულებელი", OrderStatus.ORDER_INCOMPLETE);
-        ORDER_STATUS_MAPPING.put("დასრულებული", OrderStatus.ORDER_COMPLETE);
+        ORDER_STATUS_MAPPING.put("შევსებული", OrderStatus.ORDER_COMPLETE);
+        //ORDER_STATUS_MAPPING.put("შესავსები",OrderStatus.YELLOW_AMOUNT);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userDetails = (User) authentication.getPrincipal();
         List<ConnectionFee> connectionFees = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
         int rowNum = 0;
+        int errorCounter = 0;
+        List<Long> erList = new ArrayList<>();
         try {
             Workbook workbook = new XSSFWorkbook(file.getInputStream());
             Sheet sheet = workbook.getSheetAt(0);
 
             for (int i = 2; i <= sheet.getLastRowNum(); i++) { // Start from row 2 to skip headers
-                if (rowNum == 215580) {
-                    continue;
-                }
                 Row row = sheet.getRow(i);
-                if (getDoubleCellValue(row.getCell(7)) == null ||
-                        getDoubleCellValue(row.getCell(7)) == 0.0) {
-                    System.out.println(getDoubleCellValue(row.getCell(7)));
-                    continue;
-                }
-                rowNum = i;
-                if (isRowEmpty(row)) {
-                    continue;
-                }
+//                if (getDoubleCellValue(row.getCell(7)) == null ||
+//                        getDoubleCellValue(row.getCell(7)) == 0.0) {
+//                    System.out.println(getDoubleCellValue(row.getCell(7)));
+//                    continue;
+//                }
+//                rowNum = i;
+//                if (isRowEmpty(row)) {
+//                    continue;
+//                }
 
                 ConnectionFee fee = new ConnectionFee();
                 try {
@@ -685,9 +706,13 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                     fee.setRegion(getStringCellValue(row.getCell(2)));//3 რეგიონი
                     fee.setServiceCenter(getStringCellValue(row.getCell(3)));//4 მომსახურების ცენტრი
                     fee.setProjectID(getStringCellValue(row.getCell(4)));//5 პროექტის ნომერი
+                    try {
+                        Integer paymentType = (int) row.getCell(5).getNumericCellValue();//6 ტიპი
+                        fee.setWithdrawType(PAYMENT_MAPPING.getOrDefault(paymentType, "Unknown payment type: " + row.getCell(5)));
+                    } catch (Exception e) {
+                        fee.setWithdrawType("Unknown payment type: " + row.getCell(5));
+                    }
 
-                    Integer paymentType = (int) row.getCell(5).getNumericCellValue();//6 ტიპი
-                    fee.setWithdrawType(PAYMENT_MAPPING.getOrDefault(paymentType, "Unknown payment type"));
                     //7 თარიღი
                     try {
                         LocalDate extractionDate = null;
@@ -699,7 +724,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                                     extractionDate = LocalDate.parse(row.getCell(6).toString(), formatter);
                                 } catch (Exception dateEx) {
                                     // Log specific error for invalid date format
-                                    logRowError(row, 6, dateEx);
+                                    logRowError(row, 6, dateEx, "extractionDate");
                                     extractionDate = null; // Set to null if parsing fails
                                 }
                             }
@@ -710,7 +735,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
 
                     } catch (Exception e) {
                         // Catch any other unexpected errors
-                        logRowError(row, 6, e);
+                        logRowError(row, 6, e, "extractionDate");
                         fee.setExtractionDate(null); // Set to null if there is any error
                     }
 
@@ -718,50 +743,52 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                     fee.setPurpose(getStringCellValue(row.getCell(8)) != null ? getStringCellValue(row.getCell(8)) : " ");//9 დანიშნულება
                     fee.setDescription(getStringCellValue(row.getCell(9))); //10 დამატებითი ინფირმაცია
                     fee.setTax(getStringCellValue(row.getCell(10)));//11ტაქსი
-                    fee.setNote(getStringCellValue(row.getCell(13)));// 13 შენიშვნა
-                    System.out.println(fee.getNote() + " note");
+                    fee.setNote(getStringCellValue(row.getCell(12)));// 13 შენიშვნა
 
-                    // Clarification Date
+                    // 12 Clarification Date
                     try {
                         if (row.getCell(11) != null && !row.getCell(11).toString().isEmpty()) {
                             LocalDate clarificationDate = LocalDate.parse(row.getCell(11).toString(), formatter);
                             fee.setClarificationDate(clarificationDate.atStartOfDay());
                         }
                     } catch (Exception e) {
-                        logRowError(row, 11, e);
+                        logRowError(row, 11, e, "clarificationDate");
                         fee.setClarificationDate(null);
                     }
-                    // 14 Treasury Refund Date
+
+                    // 14 თანხის დაბრუნებაზე ხაზინაში მოთხოვნის გაგზავნის თარიღი
                     try {
-                        if (row.getCell(14) != null && !row.getCell(14).toString().isEmpty()) {
-                            LocalDate treasuryRefundDate = LocalDate.parse(row.getCell(14).toString(), formatter);
+                        if (row.getCell(13) != null && !row.getCell(13).toString().isEmpty()) {
+                            LocalDate treasuryRefundDate = LocalDate.parse(row.getCell(13).toString(), formatter);
                             fee.setTreasuryRefundDate(treasuryRefundDate);
                         }
                     } catch (Exception e) {
-                        logRowError(row, 13, e);
-                        fee.setTreasuryRefundDate(null);
+                        logRowError(row, 13,
+                                e,
+                                "თანხის დაბრუნებაზე ხაზინაში მოთხოვნის გაგზავნის თარიღი: " + row.getCell(13));
+                        fee.setPaymentOrderSentDateStatus(row.getCell(13).toString());
+                        System.out.println(fee.getPaymentOrderSentDateStatus());
                     }
                     // 15 Payment Order Sent Date
                     try {
-                        if (row.getCell(15) != null && !row.getCell(15).toString().isEmpty() && row.getCell(15).toString().matches("\\d{2}-[A-Za-z]{3}-\\d{4}")) {
-                            LocalDate paymentOrderSentDate = LocalDate.parse(row.getCell(15).toString(), formatter);
+                        if (row.getCell(14) != null && !row.getCell(14).toString().isEmpty() && row.getCell(14).toString().matches("\\d{2}-[A-Za-z]{3}-\\d{4}")) {
+                            LocalDate paymentOrderSentDate = LocalDate.parse(row.getCell(14).toString(), formatter);
                             fee.setPaymentOrderSentDate(paymentOrderSentDate);
                         } else {
                             fee.setPaymentOrderSentDate(null);
                         }
                     } catch (Exception e) {
-                        logRowError(row, 14, e);
-                        fee.setPaymentOrderSentDate(null);
+                        logRowError(row, 14, e, "paymentOrderSentDate");
                     }
 
-                    // 18 order status
+                    // 18 order status MAPPED 17
                     try {
-                        fee.setOrderStatus(ORDER_STATUS_MAPPING.get(row.getCell(22) != null ?
-                                row.getCell(22).toString() : "Unknown order status"
+                        fee.setOrderStatus(ORDER_STATUS_MAPPING.get(row.getCell(17) != null ?
+                                row.getCell(17).toString() : "Unknown order status"
                         ));
                     } catch (Exception e) {
                         fee.setOrderStatus(null);
-                        logRowError(row, 17, e);
+                        logRowError(row, 17, e, "setOrderStatus");
                     }
 
                     List<String> canceledProjects = new ArrayList<>();
@@ -790,6 +817,18 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
         } catch (Exception e) {
             System.err.println("🚨 Critical error reading file :" + file.getOriginalFilename() + "row: " + rowNum);
             System.out.println(e.getMessage());
+            System.out.println(erList);
+            try {
+                // Convert List<Long> to List<String>
+                List<String> stringList = erList.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.toList());
+
+                // Write the list to file
+                Files.write(Paths.get("error_log.txt"), stringList, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            } catch (IOException ioException) {
+                System.err.println("Failed to write error list to file: " + ioException.getMessage());
+            }
             return 0;
         }
     }
@@ -799,9 +838,10 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
         return this.connectionFeeCustomRepository.fetchConnectionFees(filters);
     }
 
-    private void logRowError(Row row, int columnIndex, Exception e) {
-        System.out.println("❌ Error processing row " + (row.getRowNum() + 1) +
-                " at column " + (columnIndex + 1) + ": " + e.getMessage());
+    private void logRowError(Row row, int columnIndex, Exception e, String from) {
+        System.out.println("❌ Error processing row " + (row.getRowNum() + 1)
+                + " at column " + (columnIndex + 1) + ": " + e.getMessage()
+                + " : " + " ID " + row.getCell(0) + ": from " + from);
     }
 
     private void logFullRow(Row row, Exception e) {
@@ -868,10 +908,10 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
             try {
                 return Double.parseDouble(cell.getStringCellValue().trim());
             } catch (NumberFormatException e) {
-                return null; // Or throw an exception if this is critical
+                return 0.0; // Or throw an exception if this is critical
             }
         }
-        return null;
+        return 0.0;
     }
 
 }
