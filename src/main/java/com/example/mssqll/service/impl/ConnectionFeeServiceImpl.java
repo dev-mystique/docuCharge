@@ -593,6 +593,7 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                 .queueNumber(cf.getQueueNumber())
                 .projectID(cf.getProjectID())
                 .withdrawType(cf.getWithdrawType())
+                .paymentOrderSentDateStatus(cf.getPaymentOrderSentDateStatus())
                 .clarificationDate(cf.getClarificationDate())
                 .treasuryRefundDate(cf.getTreasuryRefundDate())
                 .paymentOrderSentDate(cf.getPaymentOrderSentDate())

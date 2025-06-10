@@ -139,7 +139,7 @@ public class ConnectionFeeSpecification {
                             Join<ConnectionFee, ExtractionTask> extractionTaskJoin = root.join("extractionTask");
                             predicates.add(criteriaBuilder.like(extractionTaskJoin.get("fileName"), "%" + value + "%"));
                             break;
-                        case "history_id":
+                        case "history":
                             predicates.add(criteriaBuilder.equal(root.get("historyId"), value));
                             break;
                         case "download":

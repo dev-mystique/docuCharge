@@ -42,6 +42,8 @@ public class ConnectionFeeResponseDto {
 
     private LocalDate paymentOrderSentDate;
 
+    private String paymentOrderSentDateStatus;
+
     private List<String> canceledOrders;
 
     private List<String> canceledProject;
