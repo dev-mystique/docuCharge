@@ -150,7 +150,7 @@ public class ConnectionFeeCustomRepository {
         if (!whereClauses.isEmpty()) {
             sql.append("WHERE ").append(String.join(" AND ", whereClauses));
         }
-        sql.append(" group by cp.last_name, et.id, et.date,cp.id, tp.first_name,tp.last_name,cp.first_name,\n" + "         cp.role,cp.created_at,cp.updated_at,\n" + "         tp.email, cp.email, et.file_name, et.send_date, cf.id, change_date,\n" + "         clarification_date, description, extraction_date, extraction_id, first_withdraw_type,\n" + "         history_id, note, ordern, order_status, payment_order_sent_date, project_id, purpose,\n" + "         queue_number, region, cf.status, tax_id, total_amount, transfer_date,\n" + "         treasury_refund_date, withdraw_type, change_person, extraction_task_id, parent_id, transfer_person,\n" + "         service_center, extraction_id, tp.updated_at, tp.created_at, et.status, tp.role, tp.id");
+        sql.append(" group by cp.last_name, et.id, et.date,cp.id, tp.first_name,tp.last_name,cp.first_name,\n" + "         cp.role,cp.created_at,cp.updated_at,\n" + "         tp.email, cp.email, et.file_name, et.send_date, cf.id, change_date,\n" + "         clarification_date, description, extraction_date, extraction_id, first_withdraw_type,\n" + "         history_id, note, ordern, order_status, payment_order_sent_date,payment_order_sent_date_status, project_id, purpose,\n" + "         queue_number, region, cf.status, tax_id, total_amount, transfer_date,\n" + "         treasury_refund_date, withdraw_type, change_person, extraction_task_id, parent_id, transfer_person,\n" + "         service_center, extraction_id, tp.updated_at, tp.created_at, et.status, tp.role, tp.id");
         List<ConnectionFee> connectionFees = jdbcTemplate.query(sql.toString(), paramValues.toArray(), connectionFeeRowMapper());
         return connectionFees;
     }
@@ -181,10 +181,7 @@ public class ConnectionFeeCustomRepository {
             fee.setTreasuryRefundDate(getLocalDate(rs, "treasury_refund_date"));
             fee.setPaymentOrderSentDate(getLocalDate(rs, "payment_order_sent_date"));
             if (rs.getString("canceled_projects") != null) {
-                System.out.println("dsadasd");
                 fee.setCanceledProject(List.of(rs.getString("canceled_projects").split(",")));
-                System.out.println(fee.getCanceledProject());
-                System.out.println(fee);
             }
             // ExtractionTask
             if (rs.getObject("et_id") != null) {

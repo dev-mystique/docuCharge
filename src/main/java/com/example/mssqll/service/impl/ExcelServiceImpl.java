@@ -175,7 +175,7 @@ public class ExcelServiceImpl implements ExcelService {
                     Date date = cell.getDateCellValue();
                     return new SimpleDateFormat("dd/MM/yyyy").format(date);
                 } else {
-                    return String.valueOf((int) cell.getNumericCellValue());
+                    return String.valueOf(cell.getNumericCellValue());
                 }
             case BOOLEAN:
                 return String.valueOf(cell.getBooleanCellValue());

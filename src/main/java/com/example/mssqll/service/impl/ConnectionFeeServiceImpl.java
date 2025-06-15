@@ -141,7 +141,6 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
         existingFee.setStatus(connectionFeeDetails.getStatus());
         existingFee.setRegion(connectionFeeDetails.getRegion().trim());
         existingFee.setServiceCenter(connectionFeeDetails.getServiceCenter().trim());
-        System.out.println(existingFee.getFirstWithdrawType());
         if (existingFee.getFirstWithdrawType() == null) {
             existingFee.setFirstWithdrawType(connectionFeeDetails.getWithdrawType());
         }
@@ -253,7 +252,6 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
         }
 
         // Check if the connectionFee is NOT a REMINDER
-        System.out.println("heck if the connectionFee is NOT a REMINDER ");
         if (!connectionFee.getStatus().equals(Status.REMINDER)) {
             Optional<ConnectionFee> reminderFeeOpt = connectionFeeRepository.findReminderChildByParentId(parent.getId());
 
@@ -273,17 +271,14 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                     connectionFeeRepository.save(reminderFee);
                 }
             }
-            System.out.println("gamocda nashtze damatebas");
 
             // Soft delete the current connectionFee
             connectionFee.setStatus(Status.SOFT_DELETED);
-            System.out.println("statusi shecvala " + connectionFee.getStatus());
             connectionFee.setChangePerson(userDetails);
             connectionFeeRepository.save(connectionFee);
         }
         // Handle case where only one child remains
         else if (connectionFees.size() == 1) {
-            System.out.println("aqa mshvidoba");
             ConnectionFee lastChild = connectionFees.get(0);
             lastChild.setStatus(Status.SOFT_DELETED);
             lastChild.setChangePerson(userDetails);
@@ -523,7 +518,6 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                     connectionFee.getChangePerson().getLastName() + " " + connectionFee.getChangePerson().getFirstName();
             case 15 -> {
                 if (connectionFee.getCanceledProject() != null) {
-                    System.out.println(connectionFee.getCanceledProject().toString());
                     yield connectionFee.getCanceledProject().toString();
                 }
                 yield "";
@@ -549,7 +543,6 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
         }
 
         Sort sort = Sort.by(direction, sortBy);
-        System.out.println(sort);
         PageRequest pageRequest = PageRequest.of(page, size, sort);
         Page<ConnectionFee> pg = connectionFeeRepository.findAll(spec, pageRequest);
         return new PagedModel<>(castToDtos(
@@ -768,7 +761,6 @@ public class ConnectionFeeServiceImpl implements ConnectionFeeService {
                                 e,
                                 "თანხის დაბრუნებაზე ხაზინაში მოთხოვნის გაგზავნის თარიღი: " + row.getCell(13));
                         fee.setPaymentOrderSentDateStatus(row.getCell(13).toString());
-                        System.out.println(fee.getPaymentOrderSentDateStatus());
                     }
                     // 15 Payment Order Sent Date
                     try {
