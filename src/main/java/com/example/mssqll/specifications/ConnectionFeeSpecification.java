@@ -27,8 +27,8 @@ public class ConnectionFeeSpecification {
             filters.forEach((key, value) -> {
                 if (value != null) {
                     switch (key) {
-                        case " ":
-                            predicates.add(criteriaBuilder.equal(root.get("status"), value));
+                        case "status":
+                            predicates.add(criteriaBuilder.equal(root.get("status"), Status.valueOf(value.toString().toUpperCase())));
                             break;
                         case "orderN":
                             if (value instanceof List<?>) {

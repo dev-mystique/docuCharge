@@ -68,7 +68,7 @@ public class ConnectionFeeCustomRepository {
                     paramValues.add("%" + value + "%");
                     break;
                 case "tax":
-                    whereClauses.add("cf." + key + " LIKE ?");
+                    whereClauses.add("cf." + key + "_id" + " LIKE ?");
                     paramValues.add("%" + value + "%");
                     break;
 
