@@ -54,11 +54,19 @@ public class ConnectionFeeSpecification {
                             if (value instanceof List<?>) {
                                 List<Predicate> likePredicates = new ArrayList<>();
                                 for (String type : (List<String>) value) {
-                                    likePredicates.add(criteriaBuilder.like(root.get("withdrawType"), "%" + type + "%"));
+                                    if (type.length() == 1) {
+                                        likePredicates.add(criteriaBuilder.like(root.get("withdrawType"), type ));
+                                    } else {
+                                        likePredicates.add(criteriaBuilder.like(root.get("withdrawType"), type ));
+                                    }
                                 }
                                 predicates.add(criteriaBuilder.or(likePredicates.toArray(new Predicate[0])));
-                            } else {
-                                predicates.add(criteriaBuilder.like(root.get("withdrawType"), "%" + value + "%"));
+                            } else if (value instanceof String stringValue) {
+                                if (stringValue.length() == 1) {
+                                    predicates.add(criteriaBuilder.like(root.get("withdrawType"), stringValue + "_%"));
+                                } else {
+                                    predicates.add(criteriaBuilder.like(root.get("withdrawType"), stringValue + "%"));
+                                }
                             }
                             break;
                         case "extractionTask":
