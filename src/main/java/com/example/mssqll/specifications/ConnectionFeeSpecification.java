@@ -2,6 +2,7 @@ package com.example.mssqll.specifications;
 
 import com.example.mssqll.models.ConnectionFee;
 import com.example.mssqll.models.ExtractionTask;
+import com.example.mssqll.models.OrderStatus;
 import com.example.mssqll.models.Status;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -24,9 +26,13 @@ public class ConnectionFeeSpecification {
             if (!filters.containsKey("status")) {
                 predicates.add(criteriaBuilder.notEqual(root.get("status"), Status.SOFT_DELETED));
             }
+            System.out.println(filters);
             filters.forEach((key, value) -> {
                 if (value != null) {
                     switch (key) {
+                        case "orderStatus":
+                            predicates.add(criteriaBuilder.equal(root.get("orderStatus"), OrderStatus.valueOf(value.toString().toUpperCase())));
+                            break;
                         case "status":
                             predicates.add(criteriaBuilder.equal(root.get("status"), Status.valueOf(value.toString().toUpperCase())));
                             break;
@@ -55,9 +61,9 @@ public class ConnectionFeeSpecification {
                                 List<Predicate> likePredicates = new ArrayList<>();
                                 for (String type : (List<String>) value) {
                                     if (type.length() == 1) {
-                                        likePredicates.add(criteriaBuilder.like(root.get("withdrawType"), type ));
+                                        likePredicates.add(criteriaBuilder.like(root.get("withdrawType"), type));
                                     } else {
-                                        likePredicates.add(criteriaBuilder.like(root.get("withdrawType"), type ));
+                                        likePredicates.add(criteriaBuilder.like(root.get("withdrawType"), type));
                                     }
                                 }
                                 predicates.add(criteriaBuilder.or(likePredicates.toArray(new Predicate[0])));
@@ -143,9 +149,6 @@ public class ConnectionFeeSpecification {
                         case "tax":
                             predicates.add(criteriaBuilder.like(root.get("tax"), "%" + value + "%"));
                             break;
-                        case "orderStatus":
-                            predicates.add(criteriaBuilder.like(root.get("order_status"), "%" + value + "%"));
-                            break;
                         case "file":
                             Join<ConnectionFee, ExtractionTask> extractionTaskJoin = root.join("extractionTask");
                             predicates.add(criteriaBuilder.like(extractionTaskJoin.get("fileName"), "%" + value + "%"));
@@ -159,6 +162,7 @@ public class ConnectionFeeSpecification {
                             break;
 
                     }
+
                 }
             });
 

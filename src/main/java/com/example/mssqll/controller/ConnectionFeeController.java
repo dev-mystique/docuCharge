@@ -128,9 +128,7 @@ public class ConnectionFeeController {
         if (orderN != null) {
             updatedFilters.put("orderN", orderN);
         }
-        if (orderStatus != null) {
-            updatedFilters.put("status", orderStatus);
-        }
+
         Specification<ConnectionFee> spec = ConnectionFeeSpecification.getSpecifications(updatedFilters);
 
         PagedModel<?> resPage = connectionFeeService.letDoFilter(spec, adjustedPage, size, sortBy, sortDir);
