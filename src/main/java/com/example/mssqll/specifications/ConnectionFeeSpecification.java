@@ -143,6 +143,9 @@ public class ConnectionFeeSpecification {
                         case "tax":
                             predicates.add(criteriaBuilder.like(root.get("tax"), "%" + value + "%"));
                             break;
+                        case "orderStatus":
+                            predicates.add(criteriaBuilder.like(root.get("order_status"), "%" + value + "%"));
+                            break;
                         case "file":
                             Join<ConnectionFee, ExtractionTask> extractionTaskJoin = root.join("extractionTask");
                             predicates.add(criteriaBuilder.like(extractionTaskJoin.get("fileName"), "%" + value + "%"));
