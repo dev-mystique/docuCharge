@@ -1,6 +1,7 @@
 package com.example.mssqll.repository;
 
 import com.example.mssqll.models.*;
+import jxl.write.DateTime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class ConnectionFeeCustomRepository {
         List<Object> paramValues = new ArrayList<>();
         List<String> whereClauses = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
-
+        System.out.println(filters.toString());
         for (Map.Entry<String, String> entry : filters.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
@@ -79,21 +80,28 @@ public class ConnectionFeeCustomRepository {
 
                 case "clarificationDateStart":
                     whereClauses.add("cf.clarification_date >= ?");
-                    paramValues.add(LocalDateTime.parse(value, formatter));
+                    paramValues.add(LocalDateTime.parse(value.replace("T", " "), formatter));
+                    System.out.println(LocalDateTime.parse(value.replace("T", " "), formatter).toString());
                     break;
 
                 case "clarificationDateEnd":
                     whereClauses.add("cf.clarification_date <= ?");
-                    paramValues.add(LocalDateTime.parse(value, formatter));
+                    paramValues.add(LocalDateTime.parse(value.replaceAll("T", " "), formatter));
+                    System.out.println(LocalDateTime.parse(value, formatter));
                     break;
                 case "changeDateStart":
+                    LocalDateTime dateTime = LocalDateTime.parse(value, formatter);
                     whereClauses.add("cf.change_date >= ?");
-                    paramValues.add(LocalDateTime.parse(value));
+                    System.out.println(dateTime);
+                    paramValues.add(dateTime);
+                    System.out.println(paramValues);
                     break;
 
                 case "changeDateEnd":
+                    dateTime = LocalDateTime.parse(value, formatter);
                     whereClauses.add("cf.change_date <= ?");
-                    paramValues.add(LocalDateTime.parse(value));
+                    System.out.println(dateTime);
+                    paramValues.add(dateTime);
                     break;
 
                 case "transferDateStart":
@@ -151,6 +159,7 @@ public class ConnectionFeeCustomRepository {
             sql.append("WHERE ").append(String.join(" AND ", whereClauses));
         }
         sql.append(" group by cp.last_name, et.id, et.date,cp.id, tp.first_name,tp.last_name,cp.first_name,\n" + "         cp.role,cp.created_at,cp.updated_at,\n" + "         tp.email, cp.email, et.file_name, et.send_date, cf.id, change_date,\n" + "         clarification_date, description, extraction_date, extraction_id, first_withdraw_type,\n" + "         history_id, note, ordern, order_status, payment_order_sent_date,payment_order_sent_date_status, project_id, purpose,\n" + "         queue_number, region, cf.status, tax_id, total_amount, transfer_date,\n" + "         treasury_refund_date, withdraw_type, change_person, extraction_task_id, parent_id, transfer_person,\n" + "         service_center, extraction_id, tp.updated_at, tp.created_at, et.status, tp.role, tp.id");
+        System.out.println(sql);
         List<ConnectionFee> connectionFees = jdbcTemplate.query(sql.toString(), paramValues.toArray(), connectionFeeRowMapper());
         return connectionFees;
     }
