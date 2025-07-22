@@ -81,20 +81,16 @@ public class ConnectionFeeCustomRepository {
                 case "clarificationDateStart":
                     whereClauses.add("cf.clarification_date >= ?");
                     paramValues.add(LocalDateTime.parse(value.replace("T", " "), formatter));
-                    System.out.println(LocalDateTime.parse(value.replace("T", " "), formatter).toString());
                     break;
 
                 case "clarificationDateEnd":
                     whereClauses.add("cf.clarification_date <= ?");
                     paramValues.add(LocalDateTime.parse(value.replaceAll("T", " "), formatter));
-                    System.out.println(LocalDateTime.parse(value, formatter));
                     break;
                 case "changeDateStart":
                     LocalDateTime dateTime = LocalDateTime.parse(value, formatter);
                     whereClauses.add("cf.change_date >= ?");
-                    System.out.println(dateTime);
                     paramValues.add(dateTime);
-                    System.out.println(paramValues);
                     break;
 
                 case "changeDateEnd":
@@ -127,6 +123,15 @@ public class ConnectionFeeCustomRepository {
                 case "totalAmountStart":
                     whereClauses.add("cf.total_amount >= ?");
                     paramValues.add(Double.parseDouble(value));
+                    break;
+                case "orderStatus":
+                    whereClauses.add("cf.order_status = ?");
+                    try {
+                        OrderStatus status = OrderStatus.valueOf(value.toUpperCase());
+                        paramValues.add(status.ordinal()); // ✅ Use ordinal (int)
+                    } catch (IllegalArgumentException e) {
+                        throw new IllegalArgumentException("Invalid orderStatus: " + value);
+                    }
                     break;
 
                 case "totalAmountEnd":
