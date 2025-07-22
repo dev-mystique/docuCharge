@@ -36,6 +36,6 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{
-            "text":"✅ *Artifact published successfully!* The JAR has been uploaded from `publish-job`."
-          }' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data "{
+            \"text\": \"✅ *Artifact published successfully!* *Commit Message:* \`${{ github.event.head_commit.message }}\
+          `\n*Branch:* \`${{ github.ref_name }}\`.\"}" "$SLACK_WEBHOOK_URL"
