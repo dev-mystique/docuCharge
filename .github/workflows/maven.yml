@@ -32,3 +32,10 @@ jobs:
         with:
           name: Package
           path: staging
+      - name: Notify Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "text":"✅ *Artifact published successfully!* The JAR has been uploaded from `publish-job`."
+          }' "$SLACK_WEBHOOK_URL"
