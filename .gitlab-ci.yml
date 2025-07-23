@@ -1,0 +1,50 @@
+stages:
+  - build
+  - publish
+  - notify
+
+variables:
+  MAVEN_CLI_OPTS: "-B -DskipTests"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  JAVA_HOME: "/usr/lib/jvm/java-17-openjdk-amd64"
+  SLACK_WEBHOOK_URL: $SLACK_WEBHOOK_URL
+
+cache:
+  paths:
+    - .m2/repository
+
+build_jar:
+  stage: build
+  image: maven:3.8.5-openjdk-17
+  script:
+    - echo "Building JAR..."
+    - mvn $MAVEN_CLI_OPTS package
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 1 hour
+
+publish:
+  stage: publish
+  image: maven:3.8.5-openjdk-17
+  dependencies:
+    - build_jar
+  script:
+    - echo "Publishing artifacts..."
+    - mkdir -p staging
+    - cp target/*.jar staging/
+  artifacts:
+    paths:
+      - staging/
+    expire_in: 1 hour
+
+notify_slack:
+  stage: notify
+  image: curlimages/curl:latest
+  script:
+    - >
+      curl -X POST -H 'Content-type: application/json' --data "{
+        \"text\": \"✅ *Artifact published successfully!* *Commit Message:* \`${CI_COMMIT_MESSAGE}\`\n*Branch:* \`${CI_COMMIT_REF_NAME}\`.\"}" "$SLACK_WEBHOOK_URL"
+  when: always
+  only:
+    - branches
